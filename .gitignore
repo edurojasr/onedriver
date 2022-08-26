@@ -20,6 +20,8 @@ build/
 *.coverage
 *.core
 *.gdb
+# do not include snap
+*.snap
 vgcore.*
 __debug_bin
 

@@ -1,0 +1,176 @@
+name: onedriver # you probably want to 'snapcraft register <name>'
+base: core20 # the base snap is the execution environment for this snap
+version: 0.1+git # just for humans, typically '1.2+git' or '1.3.2'
+# issues: https://github.com/jstaf/onedriver/issues
+# source-code: https://github.com/jstaf/onedriver
+# website: https://github.com/jstaf/onedriver
+summary:  A native Linux filesystem for Microsoft OneDrive # 79 char long summary
+description: |
+  onedriver is a native Linux filesystem for Microsoft OneDrive.
+
+  onedriver is a network filesystem that gives your computer direct access to
+  your files on Microsoft OneDrive. This is not a sync client. Instead of
+  syncing files, onedriver performs an on-demand download of files when your
+  computer attempts to use them. onedriver allows you to use files on OneDrive
+  as if they were files on your local computer.
+
+grade: devel # must be 'stable' to release into candidate/stable channels
+confinement: classic # use 'strict' once you have the right plugs and slots
+compression: lzo # this line enables LZO compression for the snap
+icon: snap/gui/onedriver.png
+license: GPL-3.0
+
+parts:
+  onedriver:
+    # See 'snapcraft plugins'
+    plugin: make
+    source: .
+    override-build: |
+      make
+      DESTDIR=$SNAPCRAFT_PART_INSTALL make install
+      cp onedriver $SNAPCRAFT_PART_INSTALL
+      cp onedriver-launcher $SNAPCRAFT_PART_INSTALL
+      mkdir -p $SNAP_COMMON/usr/share/icons/onedriver/
+      mkdir -p $SNAP_COMMON/usr/share/applications/
+      mkdir -p $SNAP_COMMON/etc/systemd/user/
+      mkdir -p $SNAP_COMMON/usr/share/man/man1/
+      cp resources/onedriver.svg $SNAP_COMMON/usr/share/icons/onedriver/
+      cp resources/onedriver.png $SNAP_COMMON/usr/share/icons/onedriver/
+      cp resources/onedriver.desktop $SNAP_COMMON/usr/share/applications/
+      cp resources/onedriver@.service $SNAP_COMMON/etc/systemd/user/
+      gzip -c resources/onedriver.1 > $SNAP_COMMON/usr/share/man/man1/onedriver.1.gz
+      mandb
+    build-packages:
+      - golang
+      - golang-go
+      - gcc
+      - libwebkit2gtk-4.0-dev
+      - libjson-glib-dev
+      - pkg-config
+      - git
+      - rsync
+      - devscripts
+      - debhelper
+      - build-essential
+      - pbuilder
+    stage-packages:
+      - libatk-bridge2.0-0
+      - libatk1.0-0
+      - libatspi2.0-0
+      - libbrotli1
+      - libcairo-gobject2
+      - libcairo2
+      - libcanberra-gtk-module
+      - libcanberra-gtk3-module
+      - libdatrie1
+      - libdrm2
+      - libegl1
+      - libenchant-2-2
+      - libepoxy0
+      - libfontconfig1
+      - libfreetype6
+      - libfribidi0
+      - libgbm1
+      - libgdk-pixbuf2.0-0
+      - libgl1
+      - libglvnd0
+      - libglx0
+      - libgraphite2-3
+      - libgstreamer-gl1.0-0
+      - libgstreamer-plugins-base1.0-0
+      - libgstreamer1.0-0
+      - libgtk-3-0
+      - libgudev-1.0-0
+      - libharfbuzz-icu0
+      - libharfbuzz0b
+      - libhyphen0
+      - libicu66
+      - libjavascriptcoregtk-4.0-18
+      - libjpeg-turbo8
+      - libjson-glib-1.0-0
+      - liblcms2-2
+      - libnotify4
+      - libopengl0
+      - libopenjp2-7
+      - liborc-0.4-0
+      - libpango-1.0-0
+      - libpangocairo-1.0-0
+      - libpangoft2-1.0-0
+      - libpixman-1-0
+      - libpng16-16
+      - libpsl5
+      - libsecret-1-0
+      - libsoup2.4-1
+      - libthai0
+      - libwayland-client0
+      - libwayland-cursor0
+      - libwayland-egl1
+      - libwayland-server0
+      - libwebkit2gtk-4.0-37
+      - libwebp6
+      - libwebpdemux2
+      - libwoff1
+      - libx11-6
+      - libx11-xcb1
+      - libxau6
+      - libxcb-render0
+      - libxcb-shm0
+      - libxcb1
+      - libxcomposite1
+      - libxcursor1
+      - libxdamage1
+      - libxdmcp6
+      - libxext6
+      - libxfixes3
+      - libxi6
+      - libxinerama1
+      - libxkbcommon0
+      - libxml2
+      - libxrandr2
+      - libxrender1
+      - libxslt1.1
+
+slots:
+  dbus-onedriver:
+    interface: dbus
+    bus: session
+    name: com.github.jstaf.onedriver
+
+apps:
+  onedriver:
+    # extensions:
+    #    - gnome-3-38
+    command: onedriver
+    # daemon: simple
+    slots:
+      - dbus-onedriver
+    plugs:
+      - desktop
+      - desktop-legacy
+      - fuse-support
+      - home
+      - hostname-control
+      - mount-observe
+      - network
+      - process-control
+      - system-backup
+      - wayland
+      - x11
+  onedriver-launcher:
+    # extensions:
+    #   - gnome-3-38
+    command: onedriver-launcher
+    slots:
+      - dbus-onedriver
+    plugs:
+      - desktop
+      - desktop-legacy
+      - fuse-support
+      - home
+      - hostname-control
+      - mount-observe
+      - network
+      - process-control
+      - system-backup
+      - wayland
+      - x11

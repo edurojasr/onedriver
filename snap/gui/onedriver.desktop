@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Onedriver
+Comment=Mount a Microsoft OneDrive account as a Linux filesystem.
+Type=Application
+Exec=onedriver.onedriver-launcher
+Icon=${SNAP}/meta/gui/onedriver.svg
+Categories=Utility
